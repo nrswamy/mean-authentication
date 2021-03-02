@@ -3,6 +3,7 @@ const passport = require('passport');
 const User = mongoose.model('User');
 
 module.exports.register = (req, res) => {
+  console.log("------in")
   const user = new User();
 
   user.name = req.body.name;
@@ -16,6 +17,7 @@ module.exports.register = (req, res) => {
     res.json({
       token: token
     });
+    console.log("-------out")
     console.log(user);
   });
 };
