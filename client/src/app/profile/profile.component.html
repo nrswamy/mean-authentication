@@ -16,6 +16,10 @@
           <label class="col-sm-3 control-label">User Id</label>
           <p class="form-control-static">{{ details?._id }}</p>
         </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">User Auth Token</label>
+          <p class="form-control-static">{{ token }}</p>
+        </div>
         <button type="submit" (click)="getToken()" class="btn btn-default">Get list of files</button>
       </div>
     </div>

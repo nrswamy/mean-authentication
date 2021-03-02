@@ -7,6 +7,7 @@ import { AuthenticationService, UserDetails } from "../services/authentication.s
 })
 export class ProfileComponent implements OnInit {
   details: UserDetails;
+  token = "";
 
   constructor(private auth: AuthenticationService) {}
 
@@ -23,7 +24,8 @@ export class ProfileComponent implements OnInit {
 
   getToken() {
     console.log("calling get token")
-    console.log(this.auth.getToken())
+    this.token = this.auth.getToken();
+    console.log(this.token)
     console.log("-----")
 
   }
