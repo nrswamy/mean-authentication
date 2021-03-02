@@ -46,7 +46,7 @@ const routesApi = require('./api/routes/index');
 // 		}
 // 	});
 // });
-
+const port = 5300;
 const app = express()
       .use(SocketIOFileUploadServer.router)
       .use(express.static(__dirname + "/out"))
