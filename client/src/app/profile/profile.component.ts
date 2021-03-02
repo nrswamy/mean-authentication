@@ -21,8 +21,11 @@ export class ProfileComponent implements OnInit {
     );
   }
 
-  getList() {
-    
+  getToken() {
+    console.log("calling get token")
+    console.log(this.auth.getToken())
+    console.log("-----")
+
   }
 
 }
