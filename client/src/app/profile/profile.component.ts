@@ -20,4 +20,9 @@ export class ProfileComponent implements OnInit {
       }
     );
   }
+
+  getList() {
+    
+  }
+
 }
