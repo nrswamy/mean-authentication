@@ -53,8 +53,8 @@ const app = express()
       .use(express.static(__dirname + "/public_html"))
       // .listen(4567);
 
-const server = app.listen(4200, () => {
-  console.log("Listening on port: " + 4200);
+const server = app.listen(port, () => {
+  console.log("Listening on port: " + port);
   });
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
