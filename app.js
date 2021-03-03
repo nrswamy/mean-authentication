@@ -1,14 +1,9 @@
 require('./api/models/db');
 require('./api/config/passport');
+var cors = require('cors')
 
-var socketio = require('socket.io');
-var jwtAuth = require('socketio-jwt-auth')
-var http = require("http"),
-    url = require("url"),
-    mime = require("mime"),
-    fs = require("fs"),
-    SocketIOFileUploadServer = require("./server")
-var io;
+var bodyParser = require('body-parser');
+var multer = require('multer');
 
 const cookieParser = require('cookie-parser');
 const createError = require('http-errors');
@@ -17,38 +12,24 @@ const logger = require('morgan');
 const passport = require('passport');
 const path = require('path');
 
-const routesApi = require('./api/routes/index');
+var storage = multer.diskStorage({ //multers disk storage settings
+  destination: function (req, file, cb) {
+      cb(null, './uploads/');
+  },
+  filename: function (req, file, cb) {
+      var datetimestamp = Date.now();
+      cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
+  }
+});
 
-// var app = http.createServer(function(req, resp){
-// 	var filename = path.join(__dirname, "public_html", url.parse(req.url).pathname);
-// 	(fs.exists || path.exists)(filename, function(exists){
-// 		if (exists) {
-// 			fs.readFile(filename, function(err, data){
-// 				if (err) {
-// 					// File exists but is not readable (permissions issue?)
-// 					resp.writeHead(500, {
-// 						"Content-Type": "text/plain"
-// 					});
-// 					resp.write("Internal server error: could not read file");
-// 					resp.end();
-// 					return;
-// 				}
- 
-// 				// File exists and is readable
-// 				var mimetype = mime.lookup(filename);
-// 				resp.writeHead(200, {
-// 					"Content-Type": mimetype
-// 				});
-// 				resp.write(data);
-// 				resp.end();
-// 				return;
-// 			});
-// 		}
-// 	});
-// });
-const port = 5300;
+var upload = multer({ //multer settings
+              storage: storage
+          }).single('file');
+
+const routesApi = require('./api/routes/index');
+const { Console } = require('console');
+const port = 4200;
 const app = express()
-      .use(SocketIOFileUploadServer.router)
       .use(express.static(__dirname + "/out"))
       .use(express.static(__dirname + "/public_html"))
       // .listen(4567);
@@ -57,16 +38,36 @@ const server = app.listen(port, () => {
   console.log("Listening on port: " + port);
   });
 // view engine setup
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
+app.use(function(req, res, next) { //allow cross origin requests
+  res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
+  res.header("Access-Control-Allow-Origin", "http://localhost");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.use(logger('dev'));
-app.use(express.json());
+app.use(bodyParser.json());  
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(cors({credentials: false, origin: true}));
+
 app.use(passport.initialize());
+app.post('/api/upload', function(req, res) {
+  upload(req,res,function(err){
+      console.log(req)
+      if(err){
+           res.json({error_code:1,err_desc:err});
+           return;
+      }
+       res.json({error_code:0,err_desc:null});
+  });
+});
+
 app.use("/api", routesApi);
 
 // catch 404 and forward to error handler
@@ -93,58 +94,6 @@ app.use((err, req, res, next) => {
   res.render('error');
 });
 
-io = socketio.listen(server);
-
-io.use(jwtAuth.authenticate({
-  secret: 'MY_SECRET',    // required, used to verify the token's signature
-  succeedWithoutToken: true
-}, function(payload, done) {
-
-  console.log("checking connection")
-  // you done callback will not include any payload data now
-  // if no token was supplied
-  if (payload && payload.sub) {
-    User.findOne({id: payload.sub}, function(err, user) {
-      if (err) {
-        // return error
-        return done(err);
-      }
-      if (!user) {
-        // return fail with an error message
-        return done(null, false, 'user does not exist');
-      }
-      // return success with a user info
-      return done(null, user);
-    });
-  } else {
-    return done() // in your connection handler user.logged_in will be false
-  }
-}));
-
-io.sockets.on("connection", function(socket){
-  var siofuServer = new SocketIOFileUploadServer();
-  
-  socket.on('data', (data) => {
-    console.log(data.toString());
-  });
-  
-	siofuServer.on("saved", function(event){
-		console.log(event.file);
-		event.file.clientDetail.base = event.file.base;
-	});
-	siofuServer.on("error", function(data){
-		console.log("Error: "+data.memo);
-		console.log(data.error);
-	});
-	siofuServer.on("start", function(event){
-		if (/\.exe$/.test(event.file.name)) {
-			console.log("Aborting: " + event.file.id);
-			siofuServer.abort(event.file.id, socket);
-		}
-	});
-	siofuServer.dir = "uploads";
-	siofuServer.maxFileSize = 2000;
-	siofuServer.listen(socket);
-});
+/** API path that will upload the files */
 
 module.exports = app;

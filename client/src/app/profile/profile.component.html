@@ -1,27 +1,21 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-6">
-      <h1 class="form-signin-heading">Your profile</h1>
-
-      <div class="form-horizontal">
-        <div class="form-group">
-          <label class="col-sm-3 control-label">Full name</label>
-          <p class="form-control-static">{{ details?.name }}</p>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-3 control-label">Email</label>
-          <p class="form-control-static">{{ details?.email }}</p>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-3 control-label">User Id</label>
-          <p class="form-control-static">{{ details?._id }}</p>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-3 control-label">User Auth Token</label>
-          <p class="form-control-static">{{ token }}</p>
-        </div>
-        <button type="submit" (click)="getToken()" class="btn btn-default">Get list of files</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="text-center"> 
+   <input class="form-control" type="file" 
+           (change)="onChange($event)"> 
+ 
+   <button (click)="onUpload()"  
+       class="btn btn-success"> 
+       Upload 
+   </button> 
+</div> 
+ 
+<!-- Shareable short link of  uoloaded file -->
+<div class="container text-center jumbotron"
+   *ngIf="shortLink"> 
+   <h2> Visit Here</h2> 
+   <a href="{{shortLink}}">{{shortLink}}</a> 
+</div> 
+ 
+<!--Flag variable is used here-->
+<div class="container" *ngIf="loading"> 
+   <h3>Loading ...</h3> 
+</div> 
