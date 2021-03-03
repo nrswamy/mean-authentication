@@ -59,16 +59,17 @@ module.exports.profileFileUpload = (req, res) => {
         var input1 = fs.createReadStream(names[0]);
         var output1 = fs.createWriteStream(names[0]+'.enc');
         input1.pipe(cipher1).pipe(output1);
+        output1.write('####'+key1+"##:##"+iv1) 
 
-        // output1.on('finish', function() {
-        //   console.log('Encrypted file written to disk!');
-        //   var cipher = crypto.createDecipheriv('aes-256-cbc', key1,iv1);
-        //   console.log('')
-        //   var input = fs.createReadStream(names[0]+'.enc');
-        //   var output = fs.createWriteStream(names[0]+'.dec');
-        //   input.pipe(cipher).pipe(output);
+        output1.on('finish', function() {
+          console.log('Encrypted file written to disk!');
+          // var cipher = crypto.createDecipheriv('aes-256-cbc', key1,iv1);
+          // console.log('')
+          // var input = fs.createReadStream(names[0]+'.enc');
+          // var output = fs.createWriteStream(names[0]+'.dec');
+          // input.pipe(cipher).pipe(output);
 
-        // });
+        });
 
         var key2 = crypto.randomBytes(32);
         var iv2 = crypto.randomBytes(16);
@@ -76,6 +77,7 @@ module.exports.profileFileUpload = (req, res) => {
         var input2 = fs.createReadStream(names[1]);
         var output2 = fs.createWriteStream(names[1]+'.enc');
         input2.pipe(cipher2).pipe(output2);
+        output2.write('####'+key2+"##:##"+iv2) 
 
         output2.on('finish', function() {
           console.log('Encrypted file written to disk!');
