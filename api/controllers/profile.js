@@ -38,7 +38,7 @@ module.exports.profileRead = (req, res) => {
 
 module.exports.profileFileUpload = (req, res) => {
   upload(req,res,function(err){
-      console.log(req.file.path)
+      console.log(req.file)
       if(err){
            res.json({error_code:1,err_desc:err});
            return;
