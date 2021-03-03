@@ -12,6 +12,7 @@ const auth = jwt({
 
 // profile
 router.get('/profile', auth, ctrlProfile.profileRead);
+router.post('/upload', ctrlProfile.profileFileUpload);
 
 // authentication
 router.post('/register', ctrlAuth.register);

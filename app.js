@@ -12,22 +12,7 @@ const logger = require('morgan');
 const passport = require('passport');
 const path = require('path');
 
-var storage = multer.diskStorage({ //multers disk storage settings
-  destination: function (req, file, cb) {
-      cb(null, './uploads/');
-  },
-  filename: function (req, file, cb) {
-      var datetimestamp = Date.now();
-      cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
-  }
-});
-
-var upload = multer({ //multer settings
-              storage: storage
-          }).single('file');
-
 const routesApi = require('./api/routes/index');
-const { Console } = require('console');
 const port = 4200;
 const app = express()
       .use(express.static(__dirname + "/out"))
@@ -43,7 +28,7 @@ app.set('view engine', 'pug');
 
 app.use(function(req, res, next) { //allow cross origin requests
   res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
-  res.header("Access-Control-Allow-Origin", "http://localhost");
+  res.header("Access-Control-Allow-Origin", "0.0.0.0");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
@@ -57,16 +42,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({credentials: false, origin: true}));
 
 app.use(passport.initialize());
-app.post('/api/upload', function(req, res) {
-  upload(req,res,function(err){
-      console.log(req)
-      if(err){
-           res.json({error_code:1,err_desc:err});
-           return;
-      }
-       res.json({error_code:0,err_desc:null});
-  });
-});
 
 app.use("/api", routesApi);
 

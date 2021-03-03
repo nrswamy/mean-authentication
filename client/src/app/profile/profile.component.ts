@@ -49,13 +49,14 @@ export class ProfileComponent implements OnInit {
   // On file Select 
   onChange(event) { 
     this.file = event.target.files[0]; 
+    this.file["userid"] = "dsbfjkgbsd";
 } 
 
 // OnClick of button Upload 
 onUpload() { 
     this.loading = !this.loading; 
     console.log(this.file); 
-    this.fileUploadService.upload(this.file).subscribe( 
+    this.fileUploadService.upload(this.file, this.details._id).subscribe( 
         (event: any) => { 
             if (typeof (event) === 'object') { 
 
