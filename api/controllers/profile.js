@@ -25,10 +25,12 @@ var upload = multer({ //multer settings
 module.exports.profileRead = (req, res) => {
   // If no user ID exists in the JWT return a 401
   if (!req.payload._id) {
+    console.log("dkfnbdshjf")
     res.status(401).json({
       message: 'UnauthorizedError: private profile'
     });
   } else {
+    console.log("sasadfsfd")
     // Otherwise continue
     User.findById(req.payload._id).exec(function(err, user) {
       res.status(200).json(user);
@@ -38,8 +40,10 @@ module.exports.profileRead = (req, res) => {
 
 module.exports.profileFileUpload = (req, res) => {
   upload(req,res,function(err){
-      console.log(req.file)
+      console.log("khskjgdfahj")
+      console.log(req)
       if(err){
+        console.log("error=---------")
            res.json({error_code:1,err_desc:err});
            return;
       }
